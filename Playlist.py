@@ -100,7 +100,7 @@ class Playlist:
             self.query_album += track.query_album
             
             # Query Track
-            insert_track = "INSERT INTO tb_track (`id_track`, `id_album`, `id_artist`, `name`, `disc_number`, `track_number`, `popularity`,`acousticness`, `danceability`, `duration_ms`, `energy`, `instrumentalness`, `key`, `liveness`, `loudness`, `mode`, `speechiness`, `tempo`, `time_signature`, `valence`, `lang`, `badwords`, `lyric`, `lyric_translate`) VALUES "
+            insert_track = "INSERT INTO tb_track (`id_track`, `id_album`, `id_artist`, `name`, `disc_number`, `track_number`, `popularity`, `acousticness`, `danceability`, `duration_ms`, `energy`, `instrumentalness`, `key`, `liveness`, `loudness`, `mode`, `speechiness`, `tempo`, `time_signature`, `valence`, `lang`, `badwords`, `lyric`, `lyric_translate`) VALUES "
             duplicate_track = " ON DUPLICATE KEY UPDATE "
             query = track.query_track.split(insert_track)
             query = query[1].split(duplicate_track)

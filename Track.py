@@ -294,7 +294,7 @@ class Track:
 
         self.query_album += insert_album
 
-        insert_track = ('INSERT INTO tb_track (`id_track`, `id_album`, `id_artist`, `name`, `disc_number`, `track_number`, `popularity`,`acousticness`, `danceability`, `duration_ms`, `energy`, `instrumentalness`, `key`, `liveness`, `loudness`, `mode`, `speechiness`, `tempo`, `time_signature`, `valence`, `lang`, `badwords`, `lyric`, `lyric_translate`) VALUES ({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) ON DUPLICATE KEY UPDATE `id_track` = {}, `id_album` = {}, `id_artist` = {}, `name` = {}, `disc_number` = {}, `track_number` = {}, `popularity` = {}, `acousticness` = {}, `danceability` = {}, `duration_ms` = {}, `energy` = {}, `instrumentalness` = {}, `key` = {}, `liveness` = {}, `loudness` = {}, `mode` = {}, `speechiness` = {}, `tempo` = {}, `time_signature` = {}, `valence` = {}, `lang` = {}, `badwords` = {}, `lyric` = {}, `lyric_translate` = {};'.format(
+        insert_track = ('INSERT INTO tb_track (`id_track`, `id_album`, `id_artist`, `name`, `disc_number`, `track_number`, `popularity`, `acousticness`, `danceability`, `duration_ms`, `energy`, `instrumentalness`, `key`, `liveness`, `loudness`, `mode`, `speechiness`, `tempo`, `time_signature`, `valence`, `lang`, `badwords`, `lyric`, `lyric_translate`) VALUES ({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) ON DUPLICATE KEY UPDATE `id_track` = {}, `id_album` = {}, `id_artist` = {}, `name` = {}, `disc_number` = {}, `track_number` = {}, `popularity` = {}, `acousticness` = {}, `danceability` = {}, `duration_ms` = {}, `energy` = {}, `instrumentalness` = {}, `key` = {}, `liveness` = {}, `loudness` = {}, `mode` = {}, `speechiness` = {}, `tempo` = {}, `time_signature` = {}, `valence` = {}, `lang` = {}, `badwords` = {}, `lyric` = {}, `lyric_translate` = {};'.format(
             f'"{self.track_id}"' if self.track_id != 'NULL' else self.track_id,
             f'"{self.album_id}"' if self.album_id != 'NULL' else self.album_id,
             f'"{self.artist_id}"' if self.artist_id != 'NULL' else self.artist_id,
@@ -302,19 +302,19 @@ class Track:
             int(self.track_disc_number) if self.track_disc_number and self.track_disc_number != 'NULL' else 'NULL',
             int(self.track_number) if self.track_number and self.track_number != 'NULL' else 'NULL',
             int(self.track_popularity) if self.track_popularity and self.track_popularity != 'NULL' else 'NULL',
-            int(self.track_acousticness) if self.track_acousticness and self.track_acousticness != 'NULL' else 'NULL',
-            int(self.track_danceability) if self.track_danceability and self.track_danceability != 'NULL' else 'NULL',
+            float(self.track_acousticness) if self.track_acousticness and self.track_acousticness != 'NULL' else 'NULL',
+            float(self.track_danceability) if self.track_danceability and self.track_danceability != 'NULL' else 'NULL',
             int(self.track_duration_ms) if self.track_duration_ms and self.track_duration_ms != 'NULL' else 'NULL',
-            int(self.track_energy) if self.track_energy and self.track_energy != 'NULL' else 'NULL',
-            int(self.track_instrumentalness) if self.track_instrumentalness and self.track_instrumentalness != 'NULL' else 'NULL',
+            float(self.track_energy) if self.track_energy and self.track_energy != 'NULL' else 'NULL',
+            float(self.track_instrumentalness) if self.track_instrumentalness and self.track_instrumentalness != 'NULL' else 'NULL',
             int(self.track_key) if self.track_key and self.track_key != 'NULL' else 'NULL',
-            int(self.track_liveness) if self.track_liveness and self.track_liveness != 'NULL' else 'NULL',
-            int(self.track_loudness) if self.track_loudness and self.track_loudness != 'NULL' else 'NULL',
+            float(self.track_liveness) if self.track_liveness and self.track_liveness != 'NULL' else 'NULL',
+            float(self.track_loudness) if self.track_loudness and self.track_loudness != 'NULL' else 'NULL',
             int(self.track_mode) if self.track_mode and self.track_mode != 'NULL' else 'NULL',
-            int(self.track_speechiness) if self.track_speechiness and self.track_speechiness != 'NULL' else 'NULL',
-            int(self.track_tempo) if self.track_tempo and self.track_tempo != 'NULL' else 'NULL',
+            float(self.track_speechiness) if self.track_speechiness and self.track_speechiness != 'NULL' else 'NULL',
+            float(self.track_tempo) if self.track_tempo and self.track_tempo != 'NULL' else 'NULL',
             int(self.track_time_signature) if self.track_time_signature and self.track_time_signature != 'NULL' else 'NULL',
-            int(self.track_valence) if self.track_valence and self.track_valence != 'NULL' else 'NULL',
+            float(self.track_valence) if self.track_valence and self.track_valence != 'NULL' else 'NULL',
             int(self.track_lang) if self.track_lang and self.track_lang != 'NULL' else 'NULL',
             f'"{self.track_badwords}"' if self.track_badwords != 'NULL' else self.track_badwords,
             f'"{self.track_lyric}"' if self.track_lyric != 'NULL' else self.track_lyric,
@@ -327,19 +327,19 @@ class Track:
             int(self.track_disc_number) if self.track_disc_number and self.track_disc_number != 'NULL' else 'NULL',
             int(self.track_number) if self.track_number and self.track_number != 'NULL' else 'NULL',
             int(self.track_popularity) if self.track_popularity and self.track_popularity != 'NULL' else 'NULL',
-            int(self.track_acousticness) if self.track_acousticness and self.track_acousticness != 'NULL' else 'NULL',
-            int(self.track_danceability) if self.track_danceability and self.track_danceability != 'NULL' else 'NULL',
+            float(self.track_acousticness) if self.track_acousticness and self.track_acousticness != 'NULL' else 'NULL',
+            float(self.track_danceability) if self.track_danceability and self.track_danceability != 'NULL' else 'NULL',
             int(self.track_duration_ms) if self.track_duration_ms and self.track_duration_ms != 'NULL' else 'NULL',
-            int(self.track_energy) if self.track_energy and self.track_energy != 'NULL' else 'NULL',
-            int(self.track_instrumentalness) if self.track_instrumentalness and self.track_instrumentalness != 'NULL' else 'NULL',
+            float(self.track_energy) if self.track_energy and self.track_energy != 'NULL' else 'NULL',
+            float(self.track_instrumentalness) if self.track_instrumentalness and self.track_instrumentalness != 'NULL' else 'NULL',
             int(self.track_key) if self.track_key and self.track_key != 'NULL' else 'NULL',
-            int(self.track_liveness) if self.track_liveness and self.track_liveness != 'NULL' else 'NULL',
-            int(self.track_loudness) if self.track_loudness and self.track_loudness != 'NULL' else 'NULL',
+            float(self.track_liveness) if self.track_liveness and self.track_liveness != 'NULL' else 'NULL',
+            float(self.track_loudness) if self.track_loudness and self.track_loudness != 'NULL' else 'NULL',
             int(self.track_mode) if self.track_mode and self.track_mode != 'NULL' else 'NULL',
-            int(self.track_speechiness) if self.track_speechiness and self.track_speechiness != 'NULL' else 'NULL',
-            int(self.track_tempo) if self.track_tempo and self.track_tempo != 'NULL' else 'NULL',
+            float(self.track_speechiness) if self.track_speechiness and self.track_speechiness != 'NULL' else 'NULL',
+            float(self.track_tempo) if self.track_tempo and self.track_tempo != 'NULL' else 'NULL',
             int(self.track_time_signature) if self.track_time_signature and self.track_time_signature != 'NULL' else 'NULL',
-            int(self.track_valence) if self.track_valence and self.track_valence != 'NULL' else 'NULL',
+            float(self.track_valence) if self.track_valence and self.track_valence != 'NULL' else 'NULL',
             int(self.track_lang) if self.track_lang and self.track_lang != 'NULL' else 'NULL',
             f'"{self.track_badwords}"' if self.track_badwords != 'NULL' else self.track_badwords,
             f'"{self.track_lyric}"' if self.track_lyric != 'NULL' else self.track_lyric,
@@ -348,7 +348,6 @@ class Track:
         )
 
         self.query_track += insert_track
-        
         # return null
 
     def createSqlFile(self):
