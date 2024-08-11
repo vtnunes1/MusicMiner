@@ -2,75 +2,96 @@ import statistics
 import re
 import pprint
 import csv
-
 import plotly.graph_objects as go
 import plotly.io as pio
 
-pio.renderers.default = 'notebook'
-
 class Analyse:
     ## Construtor ##
-    def __init__(self):
-        self.stats1 = ''
-        self.stats3 = ''
+    def __init__(self, renderer='jupyterlab'):
+        self.data1 = None
+        self.data3 = None
+        pio.renderers.default = renderer # Outros renderers: 'notebook', 'notebook_connected', 'colab'
 
-    def displayData3Stats(self):
+    def displayDataStats(self, dataset):
         """
-        Esta função exibe o conteúdo da variável stats de forma legível.
+        Esta função exibe o conteúdo de um dataset de forma legível.
+
+        Args:
+            dataset (str): O nome do dataset ('data1' ou 'data3').
         """
         
-        if not self.stats3:
+        if dataset not in ['data1', 'data3']:
+            print("Dataset inválido. Escolha 'data1' ou 'data3'.")
+            return
+
+        data = getattr(self, dataset)
+        if not data:
             print("Nenhuma estatística disponível para exibir.")
             return
-        
-        pprint.pprint(self.stats3, width=1)
 
-    def analyzeData3Csv(self):
+        pprint.pprint(data, width=1)
+
+    def analyzeDataCsv(self, filename, dataset):
         """
         Esta função realiza análises estatísticas básicas a partir de um arquivo CSV.
+
+        Args:
+            filename (str): O nome do arquivo CSV.
+            dataset (str): O nome do dataset ('data1' ou 'data3').
 
         Returns:
             dict: Um dicionário contendo as estatísticas básicas.
         """
-
-        # Definir as colunas que queremos analisar
-        columns = {
-            '`duration_ms`': [],
-            '`acousticness`': [],
-            '`danceability`': [],
-            '`energy`': [],
-            '`instrumentalness`': [],
-            '`liveness`': [],
-            '`loudness`': [],
-            '`speechiness`': [],
-            '`tempo`': [],
-            '`popularity`': []
-        }
-        record_count = 0
         
+        columns = {
+            'data1': {
+                'followers': [],
+                'popularity': []
+            },
+            'data3': {
+                '`duration_ms`': [],
+                '`acousticness`': [],
+                '`danceability`': [],
+                '`energy`': [],
+                '`instrumentalness`': [],
+                '`liveness`': [],
+                '`loudness`': [],
+                '`speechiness`': [],
+                '`tempo`': [],
+                '`popularity`': []
+            }
+        }
+
+        if dataset not in columns:
+            print("Dataset inválido. Escolha 'data1' ou 'data3'.")
+            return
+
+        data_columns = columns[dataset]
+        record_count = 0
+
         try:
-            with open('data3.csv', 'r') as csvfile:
+            with open(filename, 'r') as csvfile:
                 csv_reader = csv.reader(csvfile)
                 headers = next(csv_reader)
-                
+
                 for row in csv_reader:
                     record_count += 1
-                    for col in columns.keys():
+                    for col in data_columns.keys():
                         if col in headers:
                             index = headers.index(col)
                             value = row[index]
                             if value != 'NULL':
-                                columns[col].append(float(value))
+                                data_columns[col].append(float(value))
 
         except Exception as e:
             print(f'Erro ao ler o arquivo CSV: {str(e)}')
-            return {}
-        
-        # Calcular estatísticas
+            return
+
         stats = {'record_count': record_count}
-        for key, values in columns.items():
+        for key, values in data_columns.items():
             if values:
                 stats[key] = {
+                    'values': values,
                     'Média': statistics.mean(values),
                     'Mediana': statistics.median(values),
                     'Desvio Padrão': statistics.stdev(values),
@@ -79,24 +100,30 @@ class Analyse:
                 }
             else:
                 stats[key] = 'Não há dados disponíveis'
-        
-        self.stats3 = stats
 
-    def generateData3Graphs(self):
+        setattr(self, dataset, stats)
+
+    def generateDataGraphs(self, dataset):
         """
         Esta função gera gráficos interativos de barras a partir das análises estatísticas fornecidas.
+
+        Args:
+            dataset (str): O nome do dataset ('data1' ou 'data3').
         """
-        if not self.stats3:
+        
+        if dataset not in ['data1', 'data3']:
+            print("Dataset inválido. Escolha 'data1' ou 'data3'.")
+            return
+
+        data = getattr(self, dataset)
+        if not data:
             print("Nenhuma estatística disponível para gerar gráficos.")
             return
 
-        # Configurar o renderizador do Plotly para exibir gráficos no ambiente correto
-        pio.renderers.default = 'jupyterlab'  # Outros renderers: ['notebook', 'notebook_connected', 'colab']
+        pio.renderers.default = 'jupyterlab'
 
-        # Exibir o contador de registros de forma elegante
-        record_count = self.stats3.get('record_count', 'Não disponível')
+        record_count = data.get('record_count', 'Não disponível')
 
-        # Criar uma figura para exibir o total de registros
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=[0.5], y=[0.5],
@@ -112,9 +139,8 @@ class Analyse:
         )
         fig.show()
 
-        # Preparar dados para os gráficos
         metrics = ['Média', 'Mediana', 'Desvio Padrão', 'Maior Valor', 'Menor Valor']
-        for key, values in self.stats3.items():
+        for key, values in data.items():
             if key == 'record_count' or isinstance(values, str):
                 continue
 
@@ -135,135 +161,33 @@ class Analyse:
             )
             fig.show()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def displayData1Stats(self):
+    def generateBoxPlot(self, column_name, dataset):
         """
-        Esta função exibe o conteúdo da variável stats de forma legível.
-        """
+        Esta função gera um gráfico Box Plot para a coluna especificada.
 
-        if not self.stats1:
-            print("Nenhuma estatística disponível para exibir.")
+        Args:
+            column_name (str): O nome da coluna para a qual o Box Plot será gerado.
+            dataset (str): O nome do dataset ('data1' ou 'data3').
+        """
+        
+        if dataset not in ['data1', 'data3']:
+            print("Dataset inválido. Escolha 'data1' ou 'data3'.")
             return
 
-        pprint.pprint(self.stats1, width=1)
-
-    def analyzeData1Csv(self):
-        """
-        Esta função realiza análises estatísticas básicas a partir de um arquivo CSV.
-
-        Returns:
-            dict: Um dicionário contendo as estatísticas básicas.
-        """
-
-        # Definir as colunas que queremos analisar
-        columns = {
-            'followers': [],
-            'popularity': []
-        }
-        record_count = 0
-        
-        try:
-            with open('data1.csv', 'r') as csvfile:
-                csv_reader = csv.reader(csvfile)
-                headers = next(csv_reader)
-                
-                for row in csv_reader:
-                    record_count += 1
-                    for col in columns.keys():
-                        if col in headers:
-                            index = headers.index(col)
-                            value = row[index]
-                            if value != 'NULL':
-                                columns[col].append(float(value))
-
-        except Exception as e:
-            print(f'Erro ao ler o arquivo CSV: {str(e)}')
-            return {}
-
-        # Calcular estatísticas
-        stats = {'record_count': record_count}
-        for key, values in columns.items():
-            if values:
-                stats[key] = {
-                    'Média': statistics.mean(values),
-                    'Mediana': statistics.median(values),
-                    'Desvio Padrão': statistics.stdev(values),
-                    'Maior Valor': max(values),
-                    'Menor Valor': min(values)
-                }
-            else:
-                stats[key] = 'Não há dados disponíveis'
-        
-        self.stats1 = stats
-
-    def generateData1Graphs(self):
-        """
-        Esta função gera gráficos interativos de barras a partir das análises estatísticas fornecidas.
-        """
-        if not self.stats1:
+        data = getattr(self, dataset)
+        if not data:
             print("Nenhuma estatística disponível para gerar gráficos.")
             return
 
-        # Configurar o renderizador do Plotly para exibir gráficos no ambiente correto
-        pio.renderers.default = 'jupyterlab'  # Outros renderers: ['notebook', 'notebook_connected', 'colab']
+        if column_name not in data or isinstance(data[column_name], str):
+            print(f"Coluna {column_name} não encontrada ou não possui dados disponíveis.")
+            return
 
-        # Exibir o contador de registros de forma elegante
-        record_count = self.stats1.get('record_count', 'Não disponível')
-
-        # Criar uma figura para exibir o total de registros
+        values = data[column_name]['values']
         fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=[0.5], y=[0.5],
-            text=[f'Total de registros: {record_count}'],
-            mode='text',
-            textfont=dict(size=20, color='black')
-        ))
+        fig.add_trace(go.Box(y=values, name=column_name))
         fig.update_layout(
-            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            height=200,
-            title="Informações Gerais"
+            title=f'Box Plot para {column_name}',
+            yaxis_title=column_name
         )
         fig.show()
-
-        # Preparar dados para os gráficos
-        metrics = ['Média', 'Mediana', 'Desvio Padrão', 'Maior Valor', 'Menor Valor']
-        for key, values in self.stats1.items():
-            if key == 'record_count' or isinstance(values, str):
-                continue
-
-            fig = go.Figure(data=[
-                go.Bar(
-                    x=metrics,
-                    y=[values[metric] for metric in metrics],
-                    text=[f"{metric}: {values[metric]}" for metric in metrics],
-                    textposition='auto',
-                    hoverinfo='text'
-                )
-            ])
-            fig.update_layout(
-                title=f'Estatísticas para {key}',
-                xaxis_title="Métricas",
-                yaxis_title=key,
-                height=400
-            )
-            fig.show()
